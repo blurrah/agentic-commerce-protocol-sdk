@@ -21,6 +21,8 @@
 		"commerce",
 		"checkout",
 		"product-feed",
+		"mcp",
+		"model-context-protocol",
 		"ai",
 		"chatgpt",
 		"openai",
@@ -48,6 +50,10 @@
 		"./feed/next": {
 			"types": "./dist/feed/next/index.d.ts",
 			"import": "./dist/feed/next/index.js"
+		},
+		"./mcp": {
+			"types": "./dist/mcp/index.d.ts",
+			"import": "./dist/mcp/index.js"
 		},
 		"./test": {
 			"types": "./dist/test/index.d.ts",

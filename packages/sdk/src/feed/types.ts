@@ -179,7 +179,9 @@ export const ProductFeedItemSchema = z.object({
 	// Availability & Inventory
 	availability_date: z.string().datetime().optional(),
 	expiration_date: z.string().datetime().optional(),
-	pickup_method: z.enum(["buy_online_pickup_in_store", "curbside", "in_store"]).optional(),
+	pickup_method: z
+		.enum(["buy_online_pickup_in_store", "curbside", "in_store"])
+		.optional(),
 	pickup_sla: z.string().optional(), // e.g., "1 hour", "same day"
 
 	// Variants & Item Groups
@@ -232,7 +234,12 @@ export const ProductFeedItemSchema = z.object({
 	// Related Products
 	related_product_ids: z.array(z.string()).optional(),
 	relationship_type: z
-		.enum(["often_bought_with", "similar_to", "accessories_for", "alternative_to"])
+		.enum([
+			"often_bought_with",
+			"similar_to",
+			"accessories_for",
+			"alternative_to",
+		])
 		.optional(),
 
 	// Reviews & Q&A

@@ -6,6 +6,7 @@ const config: UserConfig = defineConfig({
 		"./src/next/index.ts",
 		"./src/feed/index.ts",
 		"./src/feed/next/index.ts",
+		"./src/mcp/index.ts",
 		"./src/test/index.ts",
 	],
 	outDir: "./dist",
