@@ -1,99 +1,99 @@
 {
-	"name": "acp-handler",
-	"version": "0.0.0-alpha.9",
-	"description": "Vercel handler for Agentic Commerce Protocol (ACP) - Build checkout APIs that AI agents like ChatGPT can use to complete purchases",
-	"license": "MIT",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/vercel/acp-handler.git",
-		"directory": "packages/sdk"
-	},
-	"homepage": "https://github.com/vercel/acp-handler#readme",
-	"bugs": {
-		"url": "https://github.com/vercel/acp-handler/issues"
-	},
-	"files": [
-		"dist/**/*"
-	],
-	"keywords": [
-		"acp",
-		"agentic-commerce",
-		"commerce",
-		"checkout",
-		"product-feed",
-		"ai",
-		"chatgpt",
-		"openai",
-		"typescript",
-		"sdk"
-	],
-	"main": "./dist/index.js",
-	"types": "./dist/index.d.ts",
-	"type": "module",
-	"sideEffects": false,
-	"exports": {
-		"./package.json": "./package.json",
-		".": {
-			"types": "./dist/index.d.ts",
-			"import": "./dist/index.js"
-		},
-		"./next": {
-			"types": "./dist/next/index.d.ts",
-			"import": "./dist/next/index.js"
-		},
-		"./feed": {
-			"types": "./dist/feed/index.d.ts",
-			"import": "./dist/feed/index.js"
-		},
-		"./feed/next": {
-			"types": "./dist/feed/next/index.d.ts",
-			"import": "./dist/feed/next/index.js"
-		},
-		"./test": {
-			"types": "./dist/test/index.d.ts",
-			"import": "./dist/test/index.js"
-		}
-	},
-	"scripts": {
-		"build": "tsdown",
-		"test": "vitest",
-		"test:watch": "vitest --watch",
-		"lint": "biome check",
-		"lint:fix": "biome check --write",
-		"format": "biome format --write",
-		"format:fix": "biome format --write",
-		"check-types": "tsc --noEmit",
-		"prepublishOnly": "cp ../../README.md README.md || true"
-	},
-	"dependencies": {
-		"zod": "^4.1.11"
-	},
-	"peerDependencies": {
-		"@opentelemetry/api": "^1.9.0",
-		"next": "^15.6.0-canary.34",
-		"redis": ">=5.8"
-	},
-	"peerDependenciesMeta": {
-		"@opentelemetry/api": {
-			"optional": true
-		},
-		"next": {
-			"optional": true
-		},
-		"redis": {
-			"optional": true
-		}
-	},
-	"devDependencies": {
-		"@biomejs/biome": "2.2.2",
-		"@opentelemetry/api": "^1.9.0",
-		"@types/node": "^22.8.6",
-		"next": "^15.6.0-canary.34",
-		"redis": ">=5.8",
-		"rolldown-plugin-dts": "^0.16.11",
-		"tsdown": "^0.15.6",
-		"typescript": "^5",
-		"unplugin-isolated-decl": "^0.15.2",
-		"vitest": "^3.2.4"
-	}
+  "name": "acp-handler",
+  "version": "0.0.0-alpha.9",
+  "description": "Vercel handler for Agentic Commerce Protocol (ACP) - Build checkout APIs that AI agents like ChatGPT can use to complete purchases",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vercel/acp-handler.git",
+    "directory": "packages/sdk"
+  },
+  "homepage": "https://github.com/vercel/acp-handler#readme",
+  "bugs": {
+    "url": "https://github.com/vercel/acp-handler/issues"
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "keywords": [
+    "acp",
+    "agentic-commerce",
+    "commerce",
+    "checkout",
+    "product-feed",
+    "ai",
+    "chatgpt",
+    "openai",
+    "typescript",
+    "sdk"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./next": {
+      "types": "./dist/next/index.d.ts",
+      "import": "./dist/next/index.js"
+    },
+    "./feed": {
+      "types": "./dist/feed/index.d.ts",
+      "import": "./dist/feed/index.js"
+    },
+    "./feed/next": {
+      "types": "./dist/feed/next/index.d.ts",
+      "import": "./dist/feed/next/index.js"
+    },
+    "./test": {
+      "types": "./dist/test/index.d.ts",
+      "import": "./dist/test/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsdown",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "lint": "biome check",
+    "lint:fix": "biome check --write",
+    "format": "biome format --write",
+    "format:fix": "biome format --write",
+    "check-types": "tsc --noEmit",
+    "prepublishOnly": "cp ../../README.md README.md || true"
+  },
+  "dependencies": {
+    "zod": "^4.1.11"
+  },
+  "peerDependencies": {
+    "@opentelemetry/api": "^1.9.0",
+    "next": "^15.6.0-canary.34",
+    "redis": ">=5.8"
+  },
+  "peerDependenciesMeta": {
+    "@opentelemetry/api": {
+      "optional": true
+    },
+    "next": {
+      "optional": true
+    },
+    "redis": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.2.2",
+    "@opentelemetry/api": "^1.9.0",
+    "@types/node": "^22.8.6",
+    "next": "15.6.0-canary.60",
+    "redis": ">=5.8",
+    "rolldown-plugin-dts": "^0.16.11",
+    "tsdown": "^0.15.6",
+    "typescript": "^5",
+    "unplugin-isolated-decl": "^0.15.2",
+    "vitest": "^3.2.4"
+  }
 }
