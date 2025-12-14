@@ -13,7 +13,7 @@
     "format:fix": "turbo format:fix"
   },
   "dependencies": {
-    "next": "^15.6.0-canary.34",
+    "next": "^16.0.10",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "turbo": "^2.5.8",
