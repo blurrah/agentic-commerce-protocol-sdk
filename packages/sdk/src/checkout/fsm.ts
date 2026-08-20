@@ -7,6 +7,10 @@ const ALLOWED: Record<CheckoutSessionStatus, CheckoutSessionStatus[]> = {
 	canceled: [],
 };
 
+export function isTerminal(status: CheckoutSessionStatus): boolean {
+	return ALLOWED[status].length === 0;
+}
+
 export function canTransition(
 	from: CheckoutSessionStatus,
 	to: CheckoutSessionStatus,

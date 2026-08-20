@@ -1,6 +1,6 @@
 import type { Tracer } from "@opentelemetry/api";
 import { ACPError, isACPError } from "./errors.ts";
-import { canTransition } from "./fsm.ts";
+import { canTransition, isTerminal } from "./fsm.ts";
 import { withIdempotency } from "./idempotency.ts";
 import { HEADERS, parseHeaders } from "./lib/headers.ts";
 import { err, ok } from "./lib/http.ts";
@@ -206,6 +206,16 @@ export function createHandlers(
 							param: "checkout_session_id",
 							type: "invalid_request_error",
 							status: 404,
+						});
+
+					// Terminal sessions are immutable records of what was (not) paid for
+					if (isTerminal(s.status))
+						throw new ACPError({
+							code: "invalid_state",
+							message: `Cannot update a session in state "${s.status}"`,
+							param: "status",
+							type: "invalid_request_error",
+							status: 400,
 						});
 
 					// Merge updates
