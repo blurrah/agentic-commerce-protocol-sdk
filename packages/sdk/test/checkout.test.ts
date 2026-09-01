@@ -320,6 +320,158 @@ describe("Checkout Integration", () => {
 		});
 	});
 
+	describe("FSM enforcement on update (terminal states)", () => {
+		async function createSession() {
+			const createReq = createRequest("http://test/checkout_sessions", {
+				method: "POST",
+				body: { items: [{ id: "prod-1", quantity: 1 }] },
+			});
+			const createRes = await handlers.create(createReq, {
+				items: [{ id: "prod-1", quantity: 1 }],
+			});
+			return await createRes.json();
+		}
+
+		function updateAttack(sessionId: string) {
+			const body = {
+				items: [{ id: "prod-laptop", quantity: 100 }],
+				customer: {
+					billing_address: {
+						email: "attacker@example.com",
+						name: "Attacker",
+						line1: "1 Evil St",
+						city: "Nowhere",
+						postal_code: "00000",
+						country: "US",
+					},
+				},
+			};
+			const req = createRequest(`http://test/checkout_sessions/${sessionId}`, {
+				method: "POST",
+				body,
+			});
+			return handlers.update(req, sessionId, body);
+		}
+
+		it("should reject update on a completed session without re-pricing", async () => {
+			// Wrap products with a spy so we can assert price() is never reached
+			let priceCalls = 0;
+			const spiedProducts = {
+				price: async (input: Parameters<typeof products.price>[0]) => {
+					priceCalls++;
+					return products.price(input);
+				},
+			};
+			handlers = createHandlers(
+				{ products: spiedProducts, payments },
+				{ store },
+			);
+
+			const session = await createSession();
+			priceCalls = 0;
+
+			const completeReq = createRequest(
+				`http://test/checkout_sessions/${session.id}/complete`,
+				{
+					method: "POST",
+					body: { payment: { delegated_token: "tok_123" } },
+				},
+			);
+			await handlers.complete(completeReq, session.id, {
+				payment: { delegated_token: "tok_123" },
+			});
+
+			const updateRes = await updateAttack(session.id);
+
+			expect(updateRes.status).toBe(400);
+			const error = await updateRes.json();
+			expect(error.error).toMatchObject({
+				code: "invalid_state",
+				param: "status",
+				type: "invalid_request_error",
+			});
+
+			// Pricing must never run for a terminal session
+			expect(priceCalls).toBe(0);
+
+			// No additional payment activity
+			expect((payments as any)._calls.authorize).toBe(1);
+			expect((payments as any)._calls.capture).toBe(1);
+
+			// Stored session is unchanged
+			const getReq = createRequest(
+				`http://test/checkout_sessions/${session.id}`,
+			);
+			const getRes = await handlers.get(getReq, session.id);
+			const stored = await getRes.json();
+			expect(stored.status).toBe("completed");
+			expect(stored.items).toEqual(session.items);
+			expect(stored.totals).toEqual(session.totals);
+			expect(stored.customer).toEqual(session.customer);
+		});
+
+		it("should reject update on a canceled session", async () => {
+			const session = await createSession();
+
+			const cancelReq = createRequest(
+				`http://test/checkout_sessions/${session.id}/cancel`,
+				{ method: "POST" },
+			);
+			await handlers.cancel(cancelReq, session.id);
+
+			const updateRes = await updateAttack(session.id);
+
+			expect(updateRes.status).toBe(400);
+			const error = await updateRes.json();
+			expect(error.error).toMatchObject({
+				code: "invalid_state",
+				param: "status",
+				type: "invalid_request_error",
+			});
+
+			// Stored session is unchanged
+			const getReq = createRequest(
+				`http://test/checkout_sessions/${session.id}`,
+			);
+			const getRes = await handlers.get(getReq, session.id);
+			const stored = await getRes.json();
+			expect(stored.status).toBe("canceled");
+			expect(stored.items).toEqual(session.items);
+			expect(stored.totals).toEqual(session.totals);
+		});
+
+		it("should still allow update on a not_ready_for_payment session", async () => {
+			// Start not ready, then flip the quote to ready to exercise the status ladder
+			let ready = false;
+			const togglingProducts = {
+				price: async (input: Parameters<typeof products.price>[0]) => {
+					const quote = await products.price(input);
+					return { ...quote, ready };
+				},
+			};
+			handlers = createHandlers(
+				{ products: togglingProducts, payments },
+				{ store },
+			);
+
+			const session = await createSession();
+			expect(session.status).toBe("not_ready_for_payment");
+
+			ready = true;
+			const body = { items: [{ id: "prod-1", quantity: 3 }] };
+			const updateReq = createRequest(
+				`http://test/checkout_sessions/${session.id}`,
+				{ method: "POST", body },
+			);
+			const updateRes = await handlers.update(updateReq, session.id, body);
+
+			expect(updateRes.status).toBe(200);
+			const updated = await updateRes.json();
+			expect(updated.status).toBe("ready_for_payment");
+			expect(updated.totals.grand_total.amount).toBe(3000);
+		});
+	});
+
 	describe("Cancel flow", () => {
 		it("should cancel a session", async () => {
 			// Create session
